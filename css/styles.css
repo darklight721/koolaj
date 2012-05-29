@@ -1,0 +1,89 @@
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #eee;
+	
+	/* Firefox */
+	display:-moz-box;
+	-moz-box-orient:horizontal;
+	-moz-box-pack:center;
+	-moz-box-align:center;
+
+	/* Safari and Chrome */
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+
+	/* W3C */
+	display:box;
+	box-orient:horizontal;
+	box-pack:center;
+	box-align:center;
+}
+
+a {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+
+	background-color: #ddd;
+	border-left: solid 3px #555;
+	border-right: solid 3px #555;
+	border-radius: 5px;
+
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+canvas {
+	width: 768px;
+	height: 768px;
+	background-color: white;
+	
+	border: dashed 1px #bbb;
+	border-radius: 5px;
+}
+
+h1, h5 {
+	font-family: "Lobster", cursive;
+}
+
+h1 {
+	font-size: 3.5em;
+	margin-top: 0px;
+}
+
+h5 {
+	margin-bottom: 0px;
+}
+
+#panel {
+	margin-right: 20px;
+	width: 136px;
+	
+	font-family: "Cabin", Arial;
+	text-align: right;
+	word-wrap: normal;
+	
+	color: #555;
+	
+	cursor: default;
+}
+
+.inset-shadow {
+	box-shadow: 0px 0px 10px 5px #bbb inset;
+}
+
+.outset-shadow {
+	box-shadow: 0px 0px 10px 5px #bbb;
+}
