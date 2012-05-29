@@ -177,7 +177,24 @@
 				img.onload = function() {
 					b.addImage(img,function(params){
 						console.log(params.x + ' ' + params.y + ' ' + params.w + ' ' + params.h);
-						ctx.drawImage(img,params.x,params.y,params.w,params.h);
+						//ctx.drawImage(img,params.x,params.y,params.w,params.h);
+						var mult,sw,sh,sx,sy;
+						if (params.w > params.h)
+						{
+							mult = Math.floor(img.width/params.w);
+							sw = mult === 0 ? img.width : params.w * mult;
+							sh = Math.floor(sw*params.h/params.w);
+						}
+						else
+						{
+							mult = Math.floor(img.height/params.h);
+							sh = mult === 0 ? img.height : params.h * mult;
+							sw = Math.floor(sh*params.w/params.h);
+						}
+						sx = Math.floor((img.width-sw)/2);
+						sy = Math.floor((img.height-sh)/2);
+
+						ctx.drawImage(img,sx,sy,sw,sh,params.x,params.y,params.w,params.h);
 					});
 				};
 				img.src = e.target.result;
