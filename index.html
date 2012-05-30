@@ -8,12 +8,25 @@
 </head>
 <body>
 	<div id="panel">
-		<h5>no-frills collage maker</h5>
-		<h1>koolaj</h1>
+		<header>
+			<h5>no-frills collage maker</h5>
+			<h1>koolaj</h1>
+		</header>
 		drag and drop your pictures here &#9654;
 		<br/><br/><br/>
+		<select id="size">
+			<option selected="selected" value="1">small tiles</option>
+			<option value="2">medium tiles</option>
+			<option value="3">large tiles</option>
+		</select>
+		<a id="randomize" href="#">randomize</a>
 		<a id="save" href="#" target="_blank">save</a>
 		<a id="clear" href="#">clear</a>
+		<br/><br/><br/>
+		<footer>
+			<hr/>
+			made by <span>roy evan sia</span>
+		</footer>
 	</div>
 	<canvas id="c" class="inset-shadow"></canvas>
 	<script type="text/javascript" src="js/app.js"></script>

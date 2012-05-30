@@ -7,27 +7,25 @@
 		var _map = [];
 		var _mapNextIndex = { x : 0, y : 0 };
 		
-		// for recording purposes
-		var images = []; // { image, x, y, type}, ...
+		var _self = this;
+		this.tiles = [];
 		
 		// constants
 		var _tileIndex = {
 			TILE_2_2 : 0,
 			TILE_2_1 : 1,
 			TILE_1_1 : 2,
-			TILE_1_2 : 3,
-			
+			TILE_1_2 : 3
 		};
 		
 		var _tileTypes = [
 			{ h_factor : 2, w_factor : 2 },
 			{ h_factor : 2, w_factor : 1 },
 			{ h_factor : 1, w_factor : 1 },
-			{ h_factor : 1, w_factor : 2 },
-			
+			{ h_factor : 1, w_factor : 2 }
 		];
 		
-		this.init = function() {
+		var clear = function() {
 			// initialize map
 			for (var y = 0; y < _height; y++)
 			{
@@ -39,8 +37,15 @@
 			}
 			_mapNextIndex.x = 0;
 			_mapNextIndex.y = 0;
+			// reset tiles
+			_self.tiles = [];
 		};
-		this.init();
+		
+		this.setSize = function(width,height,tileSize) {
+			_width = width;
+			_height = height;
+			_tileSize = tileSize;
+		};
 		
 		var random = function(n) {
 			n = n || 0;
@@ -113,50 +118,108 @@
 			_mapNextIndex.y = y;
 		};
 		
-		this.addImage = function(image,draw) {
-			
-			if (_mapNextIndex.x === _width && _mapNextIndex.y === _height)
-				return;
-			
-			var tileIndex = getRandomTileIndex();
-			var params = {
+		var addTile = function(tileIndex) {
+			var tile = {
 				x : _tileSize * _mapNextIndex.x,
 				y : _tileSize * _mapNextIndex.y,
 				w : _tileSize * _tileTypes[tileIndex].w_factor,
 				h : _tileSize * _tileTypes[tileIndex].h_factor
 			};
 			
-			// draw here
-			draw(params);
-			
 			// save
-			images.push({
-				img : image.src,
-				x : params.x,
-				y : params.y,
-				tile : tileIndex
-			});
+			_self.tiles.push(tile);
+		};
+		
+		this.formTiles = function() {
+			clear();
+			while (_mapNextIndex.y < _height) 
+			{
+				var tileIndex = getRandomTileIndex();
+				addTile(tileIndex);
+				setMapNextIndex(tileIndex);
+			}
+		};
+	};
+	
+	var BoardDrawer = function() {
+		var _images = [];
+	
+		this.clearBoard = function() {
+			cnv.width = 768;
+			cnv.height = 768;
+		};
+		
+		this.clearImages = function() {
+			_images = [];
+		}
+		
+		this.drawTiles = function() {
+			ctx.strokeStyle = "#eee";
 			
-			setMapNextIndex(tileIndex);
+			for (var i = 0; i < _board.tiles.length; i++)
+			{
+				var tile = _board.tiles[i];
+				ctx.strokeRect(tile.x,tile.y,tile.w,tile.h);
+			}
+		};
+		
+		var drawImage = function(imgIndex) {
+			if (imgIndex >= _board.tiles.length)
+				return false;
+		
+			var image = _images[imgIndex];
+			var tile = _board.tiles[imgIndex];
+			
+			var mult,sw,sh,sx,sy;
+			if (tile.w > tile.h)
+			{
+				mult = Math.floor(image.width/tile.w);
+				sw = mult === 0 ? image.width : tile.w * mult;
+				sh = Math.floor(sw*tile.h/tile.w);
+			}
+			else
+			{
+				mult = Math.floor(image.height/tile.h);
+				sh = mult === 0 ? image.height : tile.h * mult;
+				sw = Math.floor(sh*tile.w/tile.h);
+			}
+			sx = Math.floor((image.width-sw)/2);
+			sy = Math.floor((image.height-sh)/2);
+
+			ctx.drawImage(image,sx,sy,sw,sh,tile.x,tile.y,tile.w,tile.h);
+			
+			return true;
+		};
+		
+		this.addAndDrawImage = function(image) {
+			if (_images.length >= _board.tiles.length)
+				return;
+
+			_images.push(image);
+			drawImage(_images.length-1);
+		};
+		
+		this.drawImages = function() {
+			for (var i = 0; i < _images.length && drawImage(i); i++);
 		};
 	};
 
 	function handleDragOver(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
-		c.className = "outset-shadow";
+		cnv.className = "outset-shadow";
 	}
 
 	function handleDragLeave(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
-		c.className = "inset-shadow";
+		cnv.className = "inset-shadow";
 	}
 
 	function handleDrop(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
-		c.className = "inset-shadow";
+		cnv.className = "inset-shadow";
 		
 		var files = evt.dataTransfer.files;
 		for (var i = 0; i < files.length; i++)
@@ -175,27 +238,7 @@
 			reader.onload = function(e) {
 				var img = new Image();
 				img.onload = function() {
-					b.addImage(img,function(params){
-						console.log(params.x + ' ' + params.y + ' ' + params.w + ' ' + params.h);
-						//ctx.drawImage(img,params.x,params.y,params.w,params.h);
-						var mult,sw,sh,sx,sy;
-						if (params.w > params.h)
-						{
-							mult = Math.floor(img.width/params.w);
-							sw = mult === 0 ? img.width : params.w * mult;
-							sh = Math.floor(sw*params.h/params.w);
-						}
-						else
-						{
-							mult = Math.floor(img.height/params.h);
-							sh = mult === 0 ? img.height : params.h * mult;
-							sw = Math.floor(sh*params.w/params.h);
-						}
-						sx = Math.floor((img.width-sw)/2);
-						sy = Math.floor((img.height-sh)/2);
-
-						ctx.drawImage(img,sx,sy,sw,sh,params.x,params.y,params.w,params.h);
-					});
+					_boardDrawer.addAndDrawImage(img);
 				};
 				img.src = e.target.result;
 			};
@@ -203,29 +246,66 @@
 			reader.readAsDataURL(files[i]);
 		}
 	}
-
-	var b = new Board();
-	var c = document.getElementById("c");
-	var ctx = c.getContext("2d");
-
-	c.width = 768;
-	c.height = 768;
+	
+	var baseTileSize = 128;
+	
+	// setup canvas
+	var cnv = document.getElementById("c");
+	var ctx = cnv.getContext("2d");
+	
+	// setup board
+	var _board = new Board();
+	_board.formTiles();
+	
+	// setup board drawer
+	var _boardDrawer = new BoardDrawer();
+	_boardDrawer.clearBoard();
+	_boardDrawer.drawTiles();
 
 	// add drag and drop to canvas
-	c.addEventListener('dragover',handleDragOver,false);
-	c.addEventListener('dragleave',handleDragLeave,false);
-	c.addEventListener('drop',handleDrop,false);
+	cnv.addEventListener('dragover',handleDragOver,false);
+	cnv.addEventListener('dragleave',handleDragLeave,false);
+	cnv.addEventListener('drop',handleDrop,false);
+	
+	var size = document.getElementById("size");
+	size.addEventListener('change',function(evt){
+		var mult = parseInt(evt.target.value,10);
+		if (!mult || mult === 0)
+			mult = 1;
+		var tileSize = baseTileSize * mult;
+		var width = Math.floor(cnv.width/tileSize);
+		var height = Math.floor(cnv.height/tileSize);
+		
+		_board.setSize(width,height,tileSize);
+		_board.formTiles();
+		
+		_boardDrawer.clearBoard();
+		_boardDrawer.drawTiles();
+		_boardDrawer.drawImages();
+	},false);
+	
+	var randomize = document.getElementById("randomize");
+	randomize.addEventListener('click',function(evt){
+		evt.preventDefault();
+		
+		_board.formTiles();
+		_boardDrawer.clearBoard();
+		_boardDrawer.drawTiles();
+		_boardDrawer.drawImages();
+	},false);
 
 	var save = document.getElementById("save");
 	save.addEventListener('click',function(){
-		this.href = c.toDataURL();
+		this.href = cnv.toDataURL();
+		//this.href = cnv.toDataURL("image/jpeg",0.75);
 	},false);
 
 	var clear = document.getElementById("clear");
 	clear.addEventListener('click',function(evt){
 		evt.preventDefault();
-		c.width = 768;
-		c.height = 768;
-		b.init();
+		
+		_boardDrawer.clearBoard();
+		_boardDrawer.clearImages();
+		_boardDrawer.drawTiles();
 	},false);
 })();

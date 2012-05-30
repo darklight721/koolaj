@@ -31,6 +31,7 @@ a {
 	display: block;
 	color: inherit;
 	text-decoration: none;
+	text-align: center;
 
 	background-color: #ddd;
 	border-left: solid 3px #555;
@@ -38,11 +39,26 @@ a {
 	border-radius: 5px;
 
 	padding: 5px;
-	margin-bottom: 5px;
+	margin-bottom: 6px;
 }
 
-a:hover {
-	text-decoration: underline;
+a:hover, select:hover {
+	background-color: white;
+}
+
+select {
+	width: 100%;
+	padding: 5px;
+	margin-bottom: 6px;
+	
+	border: solid 1px #555;
+	border-radius: 5px;
+	outline: none;
+	
+	color: inherit;
+	background-color: #ddd;
+	font-family: inherit;
+	font-size: inherit;
 }
 
 canvas {
@@ -69,7 +85,7 @@ h5 {
 
 #panel {
 	margin-right: 20px;
-	width: 136px;
+	width: 138px;
 	
 	font-family: "Cabin", Arial;
 	text-align: right;
@@ -78,6 +94,14 @@ h5 {
 	color: #555;
 	
 	cursor: default;
+}
+
+#panel footer {
+	font-size: smaller;
+}
+
+#panel footer span {
+	font-family: "Lobster", Cursive;
 }
 
 .inset-shadow {
