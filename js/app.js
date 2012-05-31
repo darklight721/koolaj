@@ -153,6 +153,10 @@
 		this.clearImages = function() {
 			_images = [];
 		};
+
+		var validateTile = function(tileIndex) {
+			return (tileIndex > -1 && tileIndex < _board.tiles.length);
+		};
 		
 		this.drawTiles = function() {
 			ctx.strokeStyle = "#eee";
@@ -165,7 +169,7 @@
 		};
 
 		var drawHighlightedTile = function() {
-			if (_highlightedTile > -1 && _highlightedTile < _board.tiles.length)
+			if (validateTile(_highlightedTile))
 			{
 				ctx.fillStyle = "#fbfbfb";
 				var tile = _board.tiles[_highlightedTile];
@@ -173,7 +177,7 @@
 			}
 		};
 
-		this.highlightTile = function(mousePos) {
+		this.getTileAt = function(mousePos) {
 			var i;
 			for (i = 0; i < _board.tiles.length; i++)
 			{
@@ -182,6 +186,18 @@
 					mousePos.y >= tile.y && mousePos.y <= tile.y + tile.h)
 					break;
 			}
+			return i;
+		};
+
+		this.getImageAt = function(mousePos) {
+			var i = this.getTileAt(mousePos);
+			if (_images[i])
+				return _images[i];
+			return null;
+		};
+
+		this.highlightTile = function(mousePos) {
+			var i = this.getTileAt(mousePos);
 
 			if (i !== _board.tiles.length && i !== _highlightedTile)
 			{
@@ -200,15 +216,39 @@
 			this.drawTiles();
 			this.drawImages();
 		};
+
+		this.addImageAt = function(tileIndex, image) {
+			if (image && validateTile(tileIndex))
+			{
+				_images[tileIndex] = image;
+			}
+		}
+
+		this.removeImageAt = function(tileIndex) {
+			if (validateTile(tileIndex))
+			{
+				_images[tileIndex] = null;
+			}
+		};
 		
-		var drawImage = function(tileIndex) {
-			if (tileIndex < 0 || tileIndex >= _board.tiles.length)
+		this.drawImage = function(tileIndex,img) {
+			if (!validateTile(tileIndex))
 				return false;
 
-			if (!_images[tileIndex])
-				return true;
-		
-			var image = _images[tileIndex];
+			var image;
+
+			if (img)
+			{
+				image = img;
+			}
+			else
+			{
+				if (!_images[tileIndex])
+					return true;
+			
+				image = _images[tileIndex];
+			}
+
 			var tile = _board.tiles[tileIndex];
 			
 			var mult,sw,sh,sx,sy;
@@ -233,10 +273,10 @@
 		};
 		
 		this.addAndDrawImage = function(image) {
-			if (_highlightedTile > -1 && _highlightedTile < _board.tiles.length)
+			if (validateTile(_highlightedTile))
 			{
 				_images[_highlightedTile] = image;
-				drawImage(_highlightedTile);
+				this.drawImage(_highlightedTile);
 				_highlightedTile = -1;
 			}
 			else
@@ -246,7 +286,7 @@
 					if (!_images[i])
 					{
 						_images[i] = image;
-						drawImage(i);
+						this.drawImage(i);
 						break;
 					}
 				}
@@ -254,20 +294,24 @@
 		};
 		
 		this.drawImages = function() {
-			for (var i = 0; i < _board.tiles.length && drawImage(i); i++);
+			for (var i = 0; i < _board.tiles.length && this.drawImage(i); i++);
 		};
 	};
+
+	function getMousePos(evt) {
+		var mousePos = {
+			x : evt.clientX - cnv.offsetLeft,
+			y : evt.clientY - cnv.offsetTop
+		};
+		return mousePos;
+	}
 
 	function handleDragOver(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
 		cnv.className = "outset-shadow";
 
-		var mousePos = {
-			x : evt.clientX - cnv.offsetLeft,
-			y : evt.clientY - cnv.offsetTop
-		};
-		_boardDrawer.highlightTile(mousePos);
+		_boardDrawer.highlightTile(getMousePos(evt));
 	}
 
 	function handleDragLeave(evt) {
@@ -306,6 +350,72 @@
 			};
 			
 			reader.readAsDataURL(files[i]);
+		}
+	}
+
+	function handleMouseDown(evt) {
+		var mousePos = getMousePos(evt);
+		var image = _boardDrawer.getImageAt(mousePos);
+		if (image !== null)
+		{
+			isMouseDown = true;
+			selectedImage = image;
+			selectedTile = _boardDrawer.getTileAt(mousePos);
+			currectTile = selectedTile;
+			_boardDrawer.removeImageAt(selectedTile);
+
+			// change cursor
+			cnv.className = "outset-shadow move-cursor";
+		}
+	}
+
+	function handleMouseMove(evt) {
+		if (isMouseDown)
+		{
+			var mousePos = getMousePos(evt);
+			var newTile = _boardDrawer.getTileAt(mousePos);
+			if (currectTile !== newTile)
+			{
+				currectTile = newTile;
+
+				_boardDrawer.clearBoard();
+				_boardDrawer.drawTiles();
+				_boardDrawer.drawImages();
+				_boardDrawer.drawImage(currectTile,selectedImage);
+			}
+		}
+	}
+
+	function handleMouseOut(evt) {
+		if (isMouseDown)
+		{
+			_boardDrawer.addImageAt(selectedTile,selectedImage);
+			_boardDrawer.clearBoard();
+			_boardDrawer.drawTiles();
+			_boardDrawer.drawImages();
+
+			selectedImage = null;
+			selectedTile = -1;
+			currectTile = -1;
+			isMouseDown = false;
+
+			cnv.className = "inset-shadow";
+		}
+	}
+
+	function handleMouseUp(evt) {
+		if (isMouseDown)
+		{
+			var newTile = _boardDrawer.getTileAt(getMousePos(evt));
+			_boardDrawer.addImageAt(newTile,selectedImage);
+			_boardDrawer.drawImage(newTile);
+
+			selectedImage = null;
+			selectedTile = -1;
+			currectTile = -1;
+			isMouseDown = false;
+
+			cnv.className = "inset-shadow";
 		}
 	}
 	
@@ -357,6 +467,10 @@
 	}
 	
 	var baseTileSize = 128;
+	var isMouseDown = false;
+	var selectedImage = null;
+	var selectedTile = -1;
+	var currectTile = -1;
 	
 	// setup canvas
 	var cnv = document.getElementById("c");
@@ -373,6 +487,11 @@
 	cnv.addEventListener('dragover',handleDragOver,false);
 	cnv.addEventListener('dragleave',handleDragLeave,false);
 	cnv.addEventListener('drop',handleDrop,false);
+
+	cnv.addEventListener('mousedown',handleMouseDown,false);
+	cnv.addEventListener('mousemove',handleMouseMove,false);
+	cnv.addEventListener('mouseout',handleMouseOut,false);
+	cnv.addEventListener('mouseup',handleMouseUp,false);
 	
 	var evt = { target : { value : 0 } };
 	if (window.innerWidth < 1024 || window.innerHeight < 768)

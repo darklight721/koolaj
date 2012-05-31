@@ -123,3 +123,7 @@ h5 {
 .outset-shadow {
 	box-shadow: 0px 0px 10px 5px #bbb;
 }
+
+.move-cursor {
+	cursor: move;
+}
