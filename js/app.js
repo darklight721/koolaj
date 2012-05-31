@@ -145,8 +145,8 @@
 		var _images = [];
 	
 		this.clearBoard = function() {
-			cnv.width = 768;
-			cnv.height = 768;
+			cnv.width = cnv.width;
+			cnv.height = cnv.height;
 		};
 		
 		this.clearImages = function() {
@@ -247,29 +247,39 @@
 		}
 	}
 	
-	var baseTileSize = 128;
+	function csize_changed(evt) {
+		switch (evt.target.value)
+		{
+			case "small": 
+				baseTileSize = 100;
+				cnv.width = baseTileSize * 6;
+				cnv.height = baseTileSize * 6;
+				break;
+			case "large":
+				baseTileSize = 128;
+				cnv.width = baseTileSize * 6;
+				cnv.height = baseTileSize * 6;
+				break;
+			case "wide":
+				baseTileSize = 128;
+				cnv.width = baseTileSize * 12;
+				cnv.height = baseTileSize * 6;
+				break;
+			default:
+				baseTileSize = 128;
+				cnv.width = baseTileSize * 6;
+				cnv.height = baseTileSize * 6;
+				break;
+		}
+		
+		cnv.style.width = cnv.width + "px";
+		cnv.style.height = cnv.height + "px";
+		
+		tsize_changed();
+	}
 	
-	// setup canvas
-	var cnv = document.getElementById("c");
-	var ctx = cnv.getContext("2d");
-	
-	// setup board
-	var _board = new Board();
-	_board.formTiles();
-	
-	// setup board drawer
-	var _boardDrawer = new BoardDrawer();
-	_boardDrawer.clearBoard();
-	_boardDrawer.drawTiles();
-
-	// add drag and drop to canvas
-	cnv.addEventListener('dragover',handleDragOver,false);
-	cnv.addEventListener('dragleave',handleDragLeave,false);
-	cnv.addEventListener('drop',handleDrop,false);
-	
-	var size = document.getElementById("size");
-	size.addEventListener('change',function(evt){
-		var mult = parseInt(evt.target.value,10);
+	function tsize_changed(evt) {
+		var mult = evt ? parseInt(evt.target.value,10) : parseInt(document.getElementById("tsize").value,10);
 		if (!mult || mult === 0)
 			mult = 1;
 		var tileSize = baseTileSize * mult;
@@ -282,7 +292,43 @@
 		_boardDrawer.clearBoard();
 		_boardDrawer.drawTiles();
 		_boardDrawer.drawImages();
-	},false);
+	}
+	
+	var baseTileSize = 128;
+	
+	// setup canvas
+	var cnv = document.getElementById("c");
+	var ctx = cnv.getContext("2d");
+	
+	// setup board
+	var _board = new Board();
+	_board.formTiles();
+	
+	// setup board drawer
+	var _boardDrawer = new BoardDrawer();
+	
+	// add drag and drop to canvas
+	cnv.addEventListener('dragover',handleDragOver,false);
+	cnv.addEventListener('dragleave',handleDragLeave,false);
+	cnv.addEventListener('drop',handleDrop,false);
+	
+	var evt = { target : { value : 0 } };
+	if (window.innerWidth < 1024 || window.innerHeight < 768)
+		evt.target.value = "small";
+	else if (window.innerWidth > 1720)
+		evt.target.value = "wide";
+	else
+		evt.target.value = "large";
+	
+	var csize = document.getElementById("csize");
+	csize.value = evt.target.value; // set default value
+	csize.addEventListener('change',csize_changed,false);
+	// change default canvas size according to screen size
+	csize_changed(evt);
+	
+	var tsize = document.getElementById("tsize");
+	tsize.value = "1"; // set default value
+	tsize.addEventListener('change',tsize_changed,false);
 	
 	var randomize = document.getElementById("randomize");
 	randomize.addEventListener('click',function(evt){

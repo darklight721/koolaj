@@ -75,6 +75,7 @@ select {
 canvas {
 	width: 768px;
 	height: 768px;
+	margin: 10px;
 	background-color: white;
 	
 	border: dashed 1px #bbb;
@@ -95,7 +96,7 @@ h5 {
 }
 
 #panel {
-	margin-right: 20px;
+	margin: 10px;
 	width: 138px;
 	
 	font-family: "Cabin", Arial;
