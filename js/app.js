@@ -171,7 +171,7 @@
 		var drawHighlightedTile = function() {
 			if (validateTile(_highlightedTile))
 			{
-				ctx.fillStyle = "#fbfbfb";
+				ctx.fillStyle = "#fafafa";
 				var tile = _board.tiles[_highlightedTile];
 				ctx.fillRect(tile.x,tile.y,tile.w,tile.h);
 			}
