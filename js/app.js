@@ -143,6 +143,7 @@
 	
 	var BoardDrawer = function() {
 		var _images = [];
+		var _highlightedTile = -1;
 	
 		this.clearBoard = function() {
 			cnv.width = cnv.width;
@@ -151,7 +152,7 @@
 		
 		this.clearImages = function() {
 			_images = [];
-		}
+		};
 		
 		this.drawTiles = function() {
 			ctx.strokeStyle = "#eee";
@@ -162,13 +163,53 @@
 				ctx.strokeRect(tile.x,tile.y,tile.w,tile.h);
 			}
 		};
+
+		var drawHighlightedTile = function() {
+			if (_highlightedTile > -1 && _highlightedTile < _board.tiles.length)
+			{
+				ctx.fillStyle = "#fbfbfb";
+				var tile = _board.tiles[_highlightedTile];
+				ctx.fillRect(tile.x,tile.y,tile.w,tile.h);
+			}
+		};
+
+		this.highlightTile = function(mousePos) {
+			var i;
+			for (i = 0; i < _board.tiles.length; i++)
+			{
+				var tile = _board.tiles[i];
+				if (mousePos.x >= tile.x && mousePos.x <= tile.x + tile.w &&
+					mousePos.y >= tile.y && mousePos.y <= tile.y + tile.h)
+					break;
+			}
+
+			if (i !== _board.tiles.length && i !== _highlightedTile)
+			{
+				_highlightedTile = i;
+
+				this.clearBoard();
+				this.drawTiles();
+				this.drawImages();
+				drawHighlightedTile();
+			}
+		};
+
+		this.removeHighlight = function() {
+			_highlightedTile = -1;
+			this.clearBoard();
+			this.drawTiles();
+			this.drawImages();
+		};
 		
-		var drawImage = function(imgIndex) {
-			if (imgIndex >= _board.tiles.length)
+		var drawImage = function(tileIndex) {
+			if (tileIndex < 0 || tileIndex >= _board.tiles.length)
 				return false;
+
+			if (!_images[tileIndex])
+				return true;
 		
-			var image = _images[imgIndex];
-			var tile = _board.tiles[imgIndex];
+			var image = _images[tileIndex];
+			var tile = _board.tiles[tileIndex];
 			
 			var mult,sw,sh,sx,sy;
 			if (tile.w > tile.h)
@@ -192,15 +233,28 @@
 		};
 		
 		this.addAndDrawImage = function(image) {
-			if (_images.length >= _board.tiles.length)
-				return;
-
-			_images.push(image);
-			drawImage(_images.length-1);
+			if (_highlightedTile > -1 && _highlightedTile < _board.tiles.length)
+			{
+				_images[_highlightedTile] = image;
+				drawImage(_highlightedTile);
+				_highlightedTile = -1;
+			}
+			else
+			{
+				for (var i = 0; i < _board.tiles.length; i++)
+				{
+					if (!_images[i])
+					{
+						_images[i] = image;
+						drawImage(i);
+						break;
+					}
+				}
+			}
 		};
 		
 		this.drawImages = function() {
-			for (var i = 0; i < _images.length && drawImage(i); i++);
+			for (var i = 0; i < _board.tiles.length && drawImage(i); i++);
 		};
 	};
 
@@ -208,12 +262,20 @@
 		evt.stopPropagation();
 		evt.preventDefault();
 		cnv.className = "outset-shadow";
+
+		var mousePos = {
+			x : evt.clientX - cnv.offsetLeft,
+			y : evt.clientY - cnv.offsetTop
+		};
+		_boardDrawer.highlightTile(mousePos);
 	}
 
 	function handleDragLeave(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
 		cnv.className = "inset-shadow";
+
+		_boardDrawer.removeHighlight();
 	}
 
 	function handleDrop(evt) {
