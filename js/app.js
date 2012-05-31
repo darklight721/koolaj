@@ -354,6 +354,7 @@
 	}
 
 	function handleMouseDown(evt) {
+		evt.preventDefault();
 		var mousePos = getMousePos(evt);
 		var image = _boardDrawer.getImageAt(mousePos);
 		if (image !== null)
@@ -370,6 +371,7 @@
 	}
 
 	function handleMouseMove(evt) {
+		evt.preventDefault();
 		if (isMouseDown)
 		{
 			var mousePos = getMousePos(evt);
