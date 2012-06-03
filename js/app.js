@@ -402,6 +402,32 @@
 		};
 	};
 
+	function readFiles(files) {
+		for (var i = 0; i < files.length; i++)
+		{
+			// Only process image files
+			var imageType = /image.*/;
+			if (!files[i].type.match(imageType))
+				continue;
+
+			var reader = new FileReader();
+
+			reader.onerror = function(e) {
+				alert("Error code: " + e.target.error.code);
+			};
+
+			reader.onload = function(e) {
+				var img = new Image();
+				img.onload = function() {
+					_boardDrawer.addAndDrawImage(img);
+				};
+				img.src = e.target.result;
+			};
+
+			reader.readAsDataURL(files[i]);
+		}
+	}
+
 	function getMousePos(evt) {
 		var mousePos = {
 			x : evt.clientX - cnv.offsetLeft,
@@ -431,30 +457,7 @@
 		evt.preventDefault();
 		cnv.className = "inset-shadow";
 
-		var files = evt.dataTransfer.files;
-		for (var i = 0; i < files.length; i++)
-		{
-			// Only process image files
-			var imageType = /image.*/;
-			if (!files[i].type.match(imageType))
-				continue;
-
-			var reader = new FileReader();
-
-			reader.onerror = function(e) {
-				alert("Error code: " + e.target.error.code);
-			};
-
-			reader.onload = function(e) {
-				var img = new Image();
-				img.onload = function() {
-					_boardDrawer.addAndDrawImage(img);
-				};
-				img.src = e.target.result;
-			};
-
-			reader.readAsDataURL(files[i]);
-		}
+		readFiles(evt.dataTransfer.files);
 	}
 
 	function handleMouseDown(evt) {
@@ -643,6 +646,19 @@
 	var tsize = document.getElementById("tsize");
 	tsize.value = "1"; // set default value
 	tsize.addEventListener('change',tsize_changed,false);
+
+	var browse = document.getElementById("browse");
+	browse.addEventListener('click',function(evt){
+		evt.preventDefault();
+
+		var file = document.getElementById("file");
+		file.click();
+	},false);
+
+	var file = document.getElementById("file");
+	file.addEventListener('change',function(evt){
+		readFiles(evt.target.files);
+	},false);
 
 	var randomize = document.getElementById("randomize");
 	randomize.addEventListener('click',function(evt){

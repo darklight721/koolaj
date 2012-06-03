@@ -20,11 +20,23 @@ body {
 	-webkit-box-pack:center;
 	-webkit-box-align:center;
 
+	/* IE 10 */
+	display:-ms-flexbox;
+	-ms-flex-direction:row;
+	-ms-flex-pack:center;
+	-ms-flex-align:center;
+
 	/* W3C */
 	display:box;
 	box-orient:horizontal;
 	box-pack:center;
 	box-align:center;
+}
+
+a {
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
 }
 
 .btn {
