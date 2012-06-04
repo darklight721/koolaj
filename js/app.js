@@ -157,15 +157,10 @@
 				_board - Board object 
 		*/
 		var _images = []; // holds the images that have been added into the board.
-		var _highlightedTile = -1;
 		
 		this.clearBoard = function() {
 			cnv.width = cnv.width;
 			cnv.height = cnv.height;
-		};
-
-		this.clearImages = function() {
-			_images = [];
 		};
 		
 		this.redrawBoard = function() {
@@ -277,6 +272,7 @@
 		/* ****************************************************************************
 			Interfaces for tiles and highlighting of tiles.
 		*/
+		var _highlightedTile = -1;
 
 		// returns true if tileIndex is a valid index of _board.tiles
 		var validateTile = function(tileIndex) {
@@ -460,6 +456,10 @@
 
 		this.drawImages = function() {
 			for (var i = 0; i < _board.tiles.length && this.drawImage(i); i++);
+		};
+
+		this.clearImages = function() {
+			_images = [];
 		};
 	};
 
@@ -694,12 +694,13 @@
 	var csize = document.getElementById("csize");
 	csize.value = evt.target.value; // set default value
 	csize.addEventListener('change',csize_changed,false);
-	// change default canvas size according to screen size
-	csize_changed(evt);
 
 	var tsize = document.getElementById("tsize");
 	tsize.value = "1"; // set default value
 	tsize.addEventListener('change',tsize_changed,false);
+
+	// change default canvas size according to screen size
+	csize_changed(evt);
 
 	var browse = document.getElementById("browse");
 	browse.addEventListener('click',function(evt){
@@ -733,6 +734,8 @@
 	clear.addEventListener('click',function(evt){
 		evt.preventDefault();
 
-		_boardDrawer.redrawBoard();
+		_boardDrawer.clearBoard();
+		_boardDrawer.clearImages();
+		_boardDrawer.drawTiles();
 	},false);
 })();
