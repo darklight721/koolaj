@@ -197,6 +197,9 @@
 			var image = this.getImageAt(mousePos);
 			if (image && image.slice)
 			{
+				if (image.slice.w === image.width || image.slice.h === image.height)
+					return;
+					
 				var newW, newH;
 				if (image.slice.dw > image.slice.dh)
 				{
@@ -210,7 +213,7 @@
 					newH = isScaleUp ? image.slice.h + 10 : image.slice.h - 10;
 					newH = Math.max(newH,image.slice.dh);
 					newH = Math.min(newH,image.height);
-					newW = Math.floor(newH*image.slice.dw/image.slice.dh);
+					newW = Math.floor(newH*image.slice.dw/image.slice.dh);	
 				}
 				
 				image.slice.w = newW;
@@ -218,6 +221,8 @@
 				// update x and y
 				image.slice.x = Math.min(image.slice.x,Math.abs(image.width-image.slice.w));
 				image.slice.y = Math.min(image.slice.y,Math.abs(image.height-image.slice.h));
+				
+				//console.log(image.slice.x + ' ' + image.slice.y + ' ' + image.slice.w + ' ' + image.slice.h + ' ' + image.slice.dx + ' ' + image.slice.dy + ' ' + image.slice.dw + ' ' + image.slice.dh);
 				
 				ctx.drawImage(image,
 						  image.slice.x, image.slice.y,
@@ -332,7 +337,7 @@
 			}
 
 			var tile = _board.tiles[tileIndex];
-			var mult,sw,sh,sx,sy;
+			var sw,sh,sx,sy;
 			
 			if (image.slice)
 			{
@@ -343,18 +348,31 @@
 			}
 			else
 			{
-				if (tile.w > tile.h)
-				{
-					mult = Math.floor(image.width/tile.w);
+				var compute_sw_then_sh = function() {
+					var mult = Math.floor(image.width/tile.w);
 					sw = mult === 0 ? image.width : tile.w * mult;
 					sh = Math.floor(sw*tile.h/tile.w);
+				};
+				
+				var compute_sh_then_sw = function() {
+					var mult = Math.floor(image.height/tile.h);
+					sh = mult === 0 ? image.height : tile.h * mult;
+					sw = Math.floor(sh*tile.w/tile.h);
+				};
+				
+				if (tile.w > tile.h)
+				{
+					compute_sw_then_sh();
+					if (sh > image.height)
+						compute_sh_then_sw();
 				}
 				else
 				{
-					mult = Math.floor(image.height/tile.h);
-					sh = mult === 0 ? image.height : tile.h * mult;
-					sw = Math.floor(sh*tile.w/tile.h);
+					compute_sh_then_sw();
+					if (sw > image.width)
+						compute_sw_then_sh();
 				}
+				
 				sx = Math.floor((image.width-sw)/2);
 				sy = Math.floor((image.height-sh)/2);
 				
@@ -371,6 +389,7 @@
 				};
 			}
 
+			//console.log(sx + ' ' + sy + ' ' + sw + ' ' + sh + ' ' + tile.x + ' ' + tile.y + ' ' + tile.w + ' ' + tile.h);
 			ctx.drawImage(image,sx,sy,sw,sh,tile.x,tile.y,tile.w,tile.h);
 			
 			return true;
