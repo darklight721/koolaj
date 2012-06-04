@@ -218,10 +218,7 @@
 		this.scaleImageAt = function(mousePos,isScaleUp) {
 			var image = this.getImageAt(mousePos);
 			if (image && image.slice)
-			{
-				if (image.slice.w === image.width || image.slice.h === image.height)
-					return;
-					
+			{					
 				var newW, newH;
 				if (image.slice.dw > image.slice.dh)
 				{
@@ -669,7 +666,6 @@
 
 	// setup board
 	var _board = new Board();
-	_board.formTiles();
 
 	// setup board drawer
 	var _boardDrawer = new BoardDrawer();
