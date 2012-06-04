@@ -1,15 +1,16 @@
 (function(){
+	// Board is in charge of the board that contains tiles. No drawing is done here, just the creation of the board and the tiles.
 	var Board = function(width,height,tileSize) {
 		var _width = width || 6;
 		var _height = height || 6;
 		var _tileSize = tileSize || 128;
 
-		var _map = [];
-		var _mapNextIndex = { x : 0, y : 0 };
+		var _map = []; // represents the board, size is specified by _width and _height.
+		var _mapNextIndex = { x : 0, y : 0 }; // holds the next index in the map where the new tile will be added.
+		this.tiles = []; // holds the formed tiles in the board.
 
 		var _self = this;
-		this.tiles = [];
-
+		
 		// constants
 		var _tileIndex = {
 			TILE_2_2 : 0,
@@ -25,8 +26,9 @@
 			{ h_factor : 1, w_factor : 2 }
 		];
 
+		// clears the map and tiles.
 		var clear = function() {
-			// initialize map
+			// set map to 0
 			for (var y = 0; y < _height; y++)
 			{
 				_map[y] = _map[y] || [];
@@ -41,17 +43,13 @@
 			_self.tiles = [];
 		};
 
-		this.setSize = function(width,height,tileSize) {
-			_width = width;
-			_height = height;
-			_tileSize = tileSize;
-		};
-
+		// returns a random whole number from 0 to n-1.
 		var random = function(n) {
 			n = n || 0;
 			return Math.floor(Math.random()*n);
 		};
 
+		// returns a random _tileIndex constant.
 		var getRandomTileIndex = function() {
 			var tile;
 
@@ -71,7 +69,21 @@
 
 			return tile;
 		};
+		
+		// adds a tile with its computed coords and size given the tileIndex to _tiles.
+		var addTile = function(tileIndex) {
+			var tile = {
+				x : _tileSize * _mapNextIndex.x,
+				y : _tileSize * _mapNextIndex.y,
+				w : _tileSize * _tileTypes[tileIndex].w_factor,
+				h : _tileSize * _tileTypes[tileIndex].h_factor
+			};
 
+			// save
+			_self.tiles.push(tile);
+		};
+
+		// sets next index in the map (_mapNextIndex) given the tile that has just been added.
 		var setMapNextIndex = function(tileIndex) {
 			var x = _mapNextIndex.x,
 				y = _mapNextIndex.y;
@@ -118,18 +130,7 @@
 			_mapNextIndex.y = y;
 		};
 
-		var addTile = function(tileIndex) {
-			var tile = {
-				x : _tileSize * _mapNextIndex.x,
-				y : _tileSize * _mapNextIndex.y,
-				w : _tileSize * _tileTypes[tileIndex].w_factor,
-				h : _tileSize * _tileTypes[tileIndex].h_factor
-			};
-
-			// save
-			_self.tiles.push(tile);
-		};
-
+		// main interface of this class. this will fill up the board with randomly created tiles.
 		this.formTiles = function() {
 			clear();
 			while (_mapNextIndex.y < _height) 
@@ -139,17 +140,47 @@
 				setMapNextIndex(tileIndex);
 			}
 		};
+		
+		// sets the size of the board and the tile.
+		this.setSize = function(width,height,tileSize) {
+			_width = width;
+			_height = height;
+			_tileSize = tileSize;
+		};
 	};
 
+	// BoardDrawer is in charge of the rendering of the board into the canvas.
 	var BoardDrawer = function() {
-		// var cnv, ctx, _board; - defined outside
-		var _images = [];
+		/* assume these are defined outside:
+				cnv - canvas
+				ctx - canvas context
+				_board - Board object 
+		*/
+		var _images = []; // holds the images that have been added into the board.
 		var _highlightedTile = -1;
 		
-		// for scrolling imgage
+		this.clearBoard = function() {
+			cnv.width = cnv.width;
+			cnv.height = cnv.height;
+		};
+
+		this.clearImages = function() {
+			_images = [];
+		};
+		
+		this.redrawBoard = function() {
+			this.clearBoard();
+			this.drawTiles();
+			this.drawImages();
+		};
+		
+		/* ****************************************************************************
+			Interfaces for scrolling and scaling of image within a tile on the board.
+		*/
 		var _anchorPoint = null;
 		
-		this.saveAsAnchorPoint = function(image,mousePos) {
+		// saves the position of the mouse relative to the clicked image. used in scrolling.
+		this.saveAnchorPoint = function(image,mousePos) {
 			if (image && image.slice)
 			{
 				_anchorPoint = {
@@ -159,17 +190,7 @@
 			}
 		};
 		
-		this.removeSlice = function(image) {
-			if (image)
-				image.slice = null;
-			_anchorPoint = null;
-		};
-		
-		this.removeAllSlices = function() {
-			for (var i = 0; i < _board.tiles.length; i++)
-				this.removeSlice(_images[i]);
-		};
-		
+		// scrolls the given image.
 		this.scrollImage = function(image,mousePos) {
 			if (!_anchorPoint || !image.slice)
 				return;
@@ -193,6 +214,7 @@
 						  image.slice.dw, image.slice.dh);
 		};
 		
+		// scales the image at where the mouse is.
 		this.scaleImageAt = function(mousePos,isScaleUp) {
 			var image = this.getImageAt(mousePos);
 			if (image && image.slice)
@@ -207,13 +229,25 @@
 					newW = Math.max(newW,image.slice.dw);
 					newW = Math.min(newW,image.width);
 					newH = Math.floor(newW*image.slice.dh/image.slice.dw);
+
+					if (newH > image.height)
+					{
+						newH = image.height;
+						newW = Math.floor(newH*image.slice.dw/image.slice.dh);
+					}
 				}
 				else
 				{
 					newH = isScaleUp ? image.slice.h + 10 : image.slice.h - 10;
 					newH = Math.max(newH,image.slice.dh);
 					newH = Math.min(newH,image.height);
-					newW = Math.floor(newH*image.slice.dw/image.slice.dh);	
+					newW = Math.floor(newH*image.slice.dw/image.slice.dh);
+
+					if (newW > image.width)
+					{
+						newW = image.width;
+						newH = Math.floor(newW*image.slice.dh/image.slice.dw);
+					}
 				}
 				
 				image.slice.w = newW;
@@ -222,8 +256,6 @@
 				image.slice.x = Math.min(image.slice.x,Math.abs(image.width-image.slice.w));
 				image.slice.y = Math.min(image.slice.y,Math.abs(image.height-image.slice.h));
 				
-				//console.log(image.slice.x + ' ' + image.slice.y + ' ' + image.slice.w + ' ' + image.slice.h + ' ' + image.slice.dx + ' ' + image.slice.dy + ' ' + image.slice.dw + ' ' + image.slice.dh);
-				
 				ctx.drawImage(image,
 						  image.slice.x, image.slice.y,
 						  image.slice.w, image.slice.h,
@@ -231,39 +263,30 @@
 						  image.slice.dw, image.slice.dh);
 			}
 		};
-
-		this.clearBoard = function() {
-			cnv.width = cnv.width;
-			cnv.height = cnv.height;
+		
+		// removes the slice of the given image. A slice contains the coords and dimension of the image for slicing.
+		this.removeSlice = function(image) {
+			if (image)
+				image.slice = null;
+			_anchorPoint = null;
 		};
-
-		this.clearImages = function() {
-			_images = [];
+		
+		// removes the slices of all the images.
+		this.removeAllSlices = function() {
+			for (var i = 0; i < _board.tiles.length; i++)
+				this.removeSlice(_images[i]);
 		};
+		
+		/* ****************************************************************************
+			Interfaces for tiles and highlighting of tiles.
+		*/
 
+		// returns true if tileIndex is a valid index of _board.tiles
 		var validateTile = function(tileIndex) {
 			return (tileIndex > -1 && tileIndex < _board.tiles.length);
 		};
-
-		this.drawTiles = function() {
-			ctx.strokeStyle = "#eee";
-
-			for (var i = 0; i < _board.tiles.length; i++)
-			{
-				var tile = _board.tiles[i];
-				ctx.strokeRect(tile.x,tile.y,tile.w,tile.h);
-			}
-		};
-
-		var drawHighlightedTile = function() {
-			if (validateTile(_highlightedTile))
-			{
-				ctx.fillStyle = "#fafafa";
-				var tile = _board.tiles[_highlightedTile];
-				ctx.fillRect(tile.x,tile.y,tile.w,tile.h);
-			}
-		};
-
+		
+		// returns the index of the tile where the mousePos is.
 		this.getTileAt = function(mousePos) {
 			var i;
 			for (i = 0; i < _board.tiles.length; i++)
@@ -276,32 +299,55 @@
 			return i;
 		};
 
-		this.getImageAt = function(mousePos) {
-			var i = this.getTileAt(mousePos);
-			if (_images[i])
-				return _images[i];
-			return null;
+		// draws the tiles.
+		this.drawTiles = function() {
+			ctx.strokeStyle = "#eee";
+
+			for (var i = 0; i < _board.tiles.length; i++)
+			{
+				var tile = _board.tiles[i];
+				ctx.strokeRect(tile.x,tile.y,tile.w,tile.h);
+			}
 		};
 
-		this.highlightTile = function(mousePos) {
+		// draws a highlighted tile.
+		var drawHighlightedTile = function() {
+			if (validateTile(_highlightedTile))
+			{
+				ctx.fillStyle = "#fafafa";
+				var tile = _board.tiles[_highlightedTile];
+				ctx.fillRect(tile.x,tile.y,tile.w,tile.h);
+			}
+		};
+		
+		// highlights the tile at mousePos. highlighting of tiles occurs only when the mouse is over the canvas while dragging a picture onto it.
+		this.highlightTileAt = function(mousePos) {
 			var i = this.getTileAt(mousePos);
 
 			if (i !== _board.tiles.length && i !== _highlightedTile)
 			{
 				_highlightedTile = i;
 
-				this.clearBoard();
-				this.drawTiles();
-				this.drawImages();
+				this.redrawBoard();
 				drawHighlightedTile();
 			}
 		};
-
+		
+		// removes the highlighted tile.
 		this.removeHighlight = function() {
 			_highlightedTile = -1;
-			this.clearBoard();
-			this.drawTiles();
-			this.drawImages();
+			this.redrawBoard();
+		};
+
+		/* ****************************************************************************
+			Interfaces for adding and drawing of images.
+		*/
+
+		this.getImageAt = function(mousePos) {
+			var i = this.getTileAt(mousePos);
+			if (_images[i])
+				return _images[i];
+			return null;
 		};
 
 		this.addImageAt = function(tileIndex, image) {
@@ -389,7 +435,6 @@
 				};
 			}
 
-			//console.log(sx + ' ' + sy + ' ' + sw + ' ' + sh + ' ' + tile.x + ' ' + tile.y + ' ' + tile.w + ' ' + tile.h);
 			ctx.drawImage(image,sx,sy,sw,sh,tile.x,tile.y,tile.w,tile.h);
 			
 			return true;
@@ -460,7 +505,7 @@
 		evt.preventDefault();
 		cnv.className = "outset-shadow";
 
-		_boardDrawer.highlightTile(getMousePos(evt));
+		_boardDrawer.highlightTileAt(getMousePos(evt));
 	}
 
 	function handleDragLeave(evt) {
@@ -488,14 +533,14 @@
 			isMouseDown = true;
 			selectedImage = image;
 			selectedTile = _boardDrawer.getTileAt(mousePos);
-			currectTile = selectedTile;
+			currentTile = selectedTile;
 			_boardDrawer.removeImageAt(selectedTile);
 
 			// change cursor
 			cnv.className = "outset-shadow move-cursor";
 			
 			// save mousePos as anchor point
-			_boardDrawer.saveAsAnchorPoint(image,mousePos);
+			_boardDrawer.saveAnchorPoint(image,mousePos);
 		}
 	}
 
@@ -505,15 +550,13 @@
 		{
 			var mousePos = getMousePos(evt);
 			var newTile = _boardDrawer.getTileAt(mousePos);
-			if (currectTile !== newTile)
+			if (currentTile !== newTile)
 			{
-				currectTile = newTile;
+				currentTile = newTile;
 
 				_boardDrawer.removeSlice(selectedImage);
-				_boardDrawer.clearBoard();
-				_boardDrawer.drawTiles();
-				_boardDrawer.drawImages();
-				_boardDrawer.drawImage(currectTile,selectedImage);
+				_boardDrawer.redrawBoard();
+				_boardDrawer.drawImage(currentTile,selectedImage);
 			}
 			else
 			{
@@ -528,13 +571,11 @@
 		{
 			_boardDrawer.removeSlice(selectedImage);
 			_boardDrawer.addImageAt(selectedTile,selectedImage);
-			_boardDrawer.clearBoard();
-			_boardDrawer.drawTiles();
-			_boardDrawer.drawImages();
+			_boardDrawer.redrawBoard();
 
 			selectedImage = null;
 			selectedTile = -1;
-			currectTile = -1;
+			currentTile = -1;
 			isMouseDown = false;
 
 			cnv.className = "inset-shadow";
@@ -550,7 +591,7 @@
 
 			selectedImage = null;
 			selectedTile = -1;
-			currectTile = -1;
+			currentTile = -1;
 			isMouseDown = false;
 
 			cnv.className = "inset-shadow";
@@ -612,17 +653,15 @@
 		_board.setSize(width,height,tileSize);
 		_board.formTiles();
 		
-		_boardDrawer.clearBoard();
-		_boardDrawer.drawTiles();
 		_boardDrawer.removeAllSlices();
-		_boardDrawer.drawImages();
+		_boardDrawer.redrawBoard();
 	}
 
 	var baseTileSize = 128;
 	var isMouseDown = false;
 	var selectedImage = null;
 	var selectedTile = -1;
-	var currectTile = -1;
+	var currentTile = -1;
 
 	// setup canvas
 	var cnv = document.getElementById("c");
@@ -684,10 +723,8 @@
 		evt.preventDefault();
 
 		_board.formTiles();
-		_boardDrawer.clearBoard();
-		_boardDrawer.drawTiles();
 		_boardDrawer.removeAllSlices();
-		_boardDrawer.drawImages();
+		_boardDrawer.redrawBoard();
 	},false);
 
 	var save = document.getElementById("save");
@@ -700,8 +737,6 @@
 	clear.addEventListener('click',function(evt){
 		evt.preventDefault();
 
-		_boardDrawer.clearBoard();
-		_boardDrawer.clearImages();
-		_boardDrawer.drawTiles();
+		_boardDrawer.redrawBoard();
 	},false);
 })();
