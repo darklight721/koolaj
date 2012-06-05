@@ -157,7 +157,7 @@ footer a:hover {
 }
 
 .outset-shadow {
-	box-shadow: 0px 0px 0px 5px #f4f4f4, 0px 0px 5px 10px #bbb, 0px 0px 2px 2px #f4f4f4 inset;
+	box-shadow: 0px 0px 0px 5px #f7f7f7, 0px 0px 5px 10px #bbb, 0px 0px 2px 2px #f7f7f7 inset;
 }
 
 .move-cursor {
