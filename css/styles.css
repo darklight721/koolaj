@@ -42,6 +42,12 @@ canvas {
 	border-radius: 5px;
 	
 	background-color: white;
+
+	-webkit-transition: width 0.5s, height 0.5s, box-shadow 0.5s;
+	-o-transition: width 0.5s, height 0.5s, box-shadow 0.5s;
+	-moz-transition: width 0.5s, height 0.5s, box-shadow 0.5s;
+	-ms-transition: width 0.5s, height 0.5s, box-shadow 0.5s;
+	transition: width 0.5s, height 0.5s, box-shadow 0.5s;
 }
 
 a {
@@ -122,6 +128,14 @@ h5 {
 	
 	color: inherit;
 	background-color: #ddd;
+}
+
+.controls a, .controls select {
+	-webkit-transition: background-color 0.5s;
+	-o-transition:  background-color 0.5s;
+	-moz-transition: background-color 0.5s;
+	-ms-transition: background-color 0.5s;
+	transition: background-color 0.5s;
 }
 
 .controls a:hover, .controls select:hover {
