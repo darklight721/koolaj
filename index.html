@@ -7,7 +7,7 @@
 	<link href="http://fonts.googleapis.com/css?family=Cabin" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div id="panel">
+	<div class="panel">
 		<header>
 			<h5>no-frills collage maker</h5>
 			<h1>koolaj</h1>
@@ -16,19 +16,21 @@
 		or <a id="browse" href="#">browse</a>
 		<br/><br/><br/>
 		<input id="file" type="file" accept="image/*" multiple="multiple" style="display:none" />
-		<select id="csize">
-			<option value="small">small canvas</option>
-			<option selected="selected" value="large">large canvas</option>
-			<option value="wide">wide canvas</option>
-		</select>
-		<select id="tsize">
-			<option selected="selected" value="1">small tiles</option>
-			<option value="2">medium tiles</option>
-			<option value="3">large tiles</option>
-		</select>
-		<a id="randomize" class="btn" href="#">randomize</a>
-		<a id="save" class="btn" href="#" target="_blank">save</a>
-		<a id="clear" class="btn" href="#">clear</a>
+		<div class="controls">
+			<select id="csize">
+				<option value="small">small canvas</option>
+				<option selected="selected" value="large">large canvas</option>
+				<option value="wide">wide canvas</option>
+			</select>
+			<select id="tsize">
+				<option selected="selected" value="1">small tiles</option>
+				<option value="2">medium tiles</option>
+				<option value="3">large tiles</option>
+			</select>
+			<a id="randomize" href="#">randomize</a>
+			<a id="save" href="#" target="_blank">save</a>
+			<a id="clear" href="#">clear</a>
+		</div>
 		<br/><br/><br/>
 		<footer>
 			<hr/>

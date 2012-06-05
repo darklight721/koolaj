@@ -33,65 +33,21 @@ body {
 	box-align:center;
 }
 
-a {
-	color: inherit;
-	font-family: inherit;
-	font-size: inherit;
-}
-
-.btn {
-	display: block;
-	color: inherit;
-	font-family: inherit;
-	text-decoration: none;
-	text-align: center;
-
-	background-color: #ddd;
-	border-left: solid 3px #555;
-	border-right: solid 3px #555;
-	border-radius: 5px;
-
-	padding: 5px;
-	margin-bottom: 6px;
-}
-
-.btn:hover, select:hover {
-	background-color: white;
-}
-
-footer a {
-	color: inherit;
-	font-family: "Lobster", cursive;;
-	text-decoration: none;
-}
-
-footer a:hover {
-	text-decoration: underline;
-}
-
-select {
-	width: 100%;
-	padding: 5px;
-	margin-bottom: 6px;
-	
-	border: solid 1px #555;
-	border-radius: 5px;
-	outline: none;
-	
-	color: inherit;
-	background-color: #ddd;
-	font-family: inherit;
-	font-size: inherit;
-}
-
 canvas {
 	width: 768px;
 	height: 768px;
 	margin: 10px;
-	background-color: white;
 	
 	border: dashed 1px #bbb;
 	border-radius: 5px;
+	
+	background-color: white;
+}
+
+a {
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
 }
 
 h1, h5 {
@@ -107,7 +63,7 @@ h5 {
 	margin-bottom: 0px;
 }
 
-#panel {
+.panel {
 	margin: 10px;
 	width: 138px;
 	
@@ -116,24 +72,78 @@ h5 {
 	word-wrap: normal;
 	
 	color: #555;
-	
 	cursor: default;
 }
 
-#panel footer {
+.panel footer {
 	font-size: smaller;
 }
 
-#panel footer span {
-	font-family: "Lobster", Cursive;
+.controls {
+	padding: 6px 6px 0px 6px;
+	
+	border: dashed 1px #bbb;
+	border-radius: 5px;
+	
+	background-color: #fafafa;
+	box-shadow: 0px 0px 0px 2px #eee, 0px 0px 2px 4px #bbb, 0px 0px 5px 5px #eee inset;
+}
+
+.controls a {
+	display: block;
+	padding: 5px;
+	margin-top: 0px;
+	margin-bottom: 6px;
+	
+	border: solid 1px #555;
+	border-radius: 5px;
+	
+	font-family: inherit;
+	font-size: inherit;
+	text-decoration: none;
+	text-align: center;
+	
+	color: inherit;
+	background-color: #ddd;
+}
+
+.controls select {
+	width: 100%;
+	padding: 5px;
+	margin-top: 0px;
+	margin-bottom: 6px;
+	
+	border: solid 1px #555;
+	border-radius: 5px;
+	outline: none;
+	
+	font-family: inherit;
+	font-size: inherit;
+	
+	color: inherit;
+	background-color: #ddd;
+}
+
+.controls a:hover, .controls select:hover {
+	background-color: white;
+}
+
+footer a {
+	font-family: "Lobster", cursive;;
+	text-decoration: none;
+	color: inherit;
+}
+
+footer a:hover {
+	text-decoration: underline;
 }
 
 .inset-shadow {
-	box-shadow: 0px 0px 10px 5px #bbb inset;
+	box-shadow: 0px 0px 0px 5px #f4f4f4, 0px 0px 2px 7px #bbb, 0px 0px 2px 2px #f4f4f4 inset;
 }
 
 .outset-shadow {
-	box-shadow: 0px 0px 10px 5px #bbb;
+	box-shadow: 0px 0px 0px 5px #f4f4f4, 0px 0px 5px 10px #bbb, 0px 0px 2px 2px #f4f4f4 inset;
 }
 
 .move-cursor {
