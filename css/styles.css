@@ -36,7 +36,7 @@ body {
 canvas {
 	width: 768px;
 	height: 768px;
-	margin: 10px;
+	margin: 10px 10px 10px 0px;
 	
 	border: dashed 1px #bbb;
 	border-radius: 5px;
@@ -70,8 +70,8 @@ h5 {
 }
 
 #panel {
-	margin: 10px;
-	width: 138px;
+	margin: 10px 0px 10px 10px;
+	width: 158px;
 	
 	font-family: "Cabin", Arial;
 	text-align: right;
@@ -81,8 +81,25 @@ h5 {
 	cursor: default;
 }
 
+#panel header, #panel .controls, #panel footer {
+	margin-right: 20px;
+}
+
 #panel footer {
 	font-size: smaller;
+}
+
+#browse {
+	padding: 5px 10px 5px 5px;
+	border: dashed 1px #bbb;
+	border-right: none;
+	border-radius: 5px 0px 0px 5px;
+	
+	font-family: "Lobster", cursive;
+	color: white;
+	background-color: #4169E1;
+	box-shadow: 0px 0px 0px 2px #4169E1, 0px 0px 2px 4px #ccc;
+	cursor: pointer;
 }
 
 .controls {
@@ -184,7 +201,7 @@ footer a:hover {
 	text-align: center;
 }
 
-#image_container #back {
+#back {
 	position: absolute;
 	padding: 5px;
 	top: 10%;
