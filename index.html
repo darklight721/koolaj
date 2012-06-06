@@ -7,7 +7,7 @@
 	<link href="http://fonts.googleapis.com/css?family=Cabin" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div class="panel">
+	<div id="panel">
 		<header>
 			<h5>no-frills collage maker</h5>
 			<h1>koolaj</h1>
@@ -38,6 +38,11 @@
 		</footer>
 	</div>
 	<canvas id="c" class="inset-shadow"></canvas>
+	<div id="image_container" class="hidden">
+		<img id="image" alt="Image" />
+		<footer>To download, right-click the image and select "Save Image As...".</footer>
+		<div id="back">Back</div>
+	</div>
 	<script type="text/javascript" src="js/app.js"></script>
 </body>
 </html>

@@ -723,11 +723,23 @@
 		_boardDrawer.removeAllSlices();
 		_boardDrawer.redrawBoard();
 	},false);
+	
+	var panel = document.getElementById("panel");
+	var image_container = document.getElementById("image_container");
 
 	var save = document.getElementById("save");
-	save.addEventListener('click',function(){
-		this.href = cnv.toDataURL();
-		//this.href = cnv.toDataURL("image/jpeg",0.75);
+	save.addEventListener('click',function(evt){
+		evt.preventDefault();
+		
+		var image = document.getElementById("image");
+		image.src = cnv.toDataURL("image/jpeg",0.9);
+		image.width = cnv.width;
+		image.height = cnv.height;
+		
+		panel.className = "hidden";
+		cnv.className = "hidden";
+		image_container.className = "shown";
+		
 	},false);
 
 	var clear = document.getElementById("clear");
@@ -738,4 +750,11 @@
 		_boardDrawer.clearImages();
 		_boardDrawer.drawTiles();
 	},false);
+	
+	var back = document.getElementById("back");
+	back.addEventListener('click',function(){
+		panel.className = "";
+		cnv.className = "inset-shadow";
+		image_container.className = "hidden";
+	});
 })();
