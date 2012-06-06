@@ -703,9 +703,7 @@
 	csize_changed(evt);
 
 	var browse = document.getElementById("browse");
-	browse.addEventListener('click',function(evt){
-		evt.preventDefault();
-
+	browse.addEventListener('click',function(){
 		var file = document.getElementById("file");
 		file.click();
 	},false);
