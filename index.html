@@ -7,7 +7,7 @@
 	<link href="http://fonts.googleapis.com/css?family=Cabin" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div id="panel">
+	<div id="controls_container">
 		<header>
 			<h5>no-frills collage maker</h5>
 			<h1>koolaj</h1>
@@ -16,8 +16,8 @@
 			drag and drop your pictures here &#9654;<br/>
 			or click this to browse
 		</div>
-		<br/><br/><br/>
 		<input id="file" type="file" accept="image/*" multiple="multiple" style="display:none" />
+		<br/><br/><br/>
 		<div class="controls">
 			<select id="csize">
 				<option value="small">small canvas</option>
@@ -39,11 +39,17 @@
 			made by <a href="http://twitter.com/pr00t" target="_blank">roy evan sia</a>
 		</footer>
 	</div>
-	<canvas id="c" class="inset-shadow"></canvas>
+	<div id="canvas_container">
+		<canvas id="c" class="inset-shadow"></canvas>
+	</div>
 	<div id="image_container" class="hidden">
 		<img id="image" alt="Image" />
 		<footer>To download, right-click the image and select "Save Image As...".</footer>
 		<div id="back">Back</div>
+	</div>
+	<div id="unsupported" style="display:none">
+		It looks like your browser has trouble viewing koolaj.<br/>
+		How about trying this on Chrome or Firefox, or the new IE 10?
 	</div>
 	<script type="text/javascript" src="js/app.js"></script>
 </body>

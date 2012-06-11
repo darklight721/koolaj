@@ -722,21 +722,22 @@
 		_boardDrawer.redrawBoard();
 	},false);
 	
-	var panel = document.getElementById("panel");
+	var controls_container = document.getElementById("controls_container");
+	var canvas_container = document.getElementById("canvas_container");
 	var image_container = document.getElementById("image_container");
 
 	var save = document.getElementById("save");
 	save.addEventListener('click',function(evt){
-		evt.preventDefault();
+		evt.preventDefault();	
 		
 		var image = document.getElementById("image");
 		image.src = cnv.toDataURL("image/jpeg",0.9);
 		image.width = cnv.width;
 		image.height = cnv.height;
 		
-		panel.className = "hidden";
-		cnv.className = "hidden";
 		image_container.className = "shown";
+		controls_container.className = "hidden";
+		canvas_container.className = "hidden";
 		
 	},false);
 
@@ -751,8 +752,16 @@
 	
 	var back = document.getElementById("back");
 	back.addEventListener('click',function(){
-		panel.className = "";
-		cnv.className = "inset-shadow";
 		image_container.className = "hidden";
+		controls_container.className = "shown";
+		canvas_container.className = "shown";
 	});
+	
+	// detect browser. only allow chrome, firefox, ie10
+	var allowed = /(Chrome|Firefox|MSIE 10.0)/i;
+	if (!allowed.test(navigator.userAgent))
+	{
+		document.getElementById("unsupported").style.display = "block";
+	}
+	
 })();
