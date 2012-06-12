@@ -735,7 +735,7 @@
 		image.width = cnv.width;
 		image.height = cnv.height;
 		
-		image_container.className = "shown";
+		image_container.className = "shown relative";
 		controls_container.className = "hidden";
 		canvas_container.className = "hidden";
 		

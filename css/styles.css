@@ -237,9 +237,12 @@ h5 {
 }
 
 .shown {
-	position: relative;
 	opacity: 1;
 	visibility: visible;
+}
+
+.relative {
+	position: relative;
 }
 
 #unsupported {
