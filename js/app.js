@@ -491,8 +491,8 @@
 
 	function getMousePos(evt) {
 		var mousePos = {
-			x : evt.clientX - cnv.offsetLeft,
-			y : evt.clientY - cnv.offsetTop
+			x : document.body.scrollLeft + evt.clientX - cnv.offsetLeft,
+			y : document.body.scrollTop + evt.clientY - cnv.offsetTop
 		};
 		return mousePos;
 	}
@@ -622,13 +622,13 @@
 				cnv.height = baseTileSize * 6;
 				break;
 			case "wide":
-				baseTileSize = 128;
-				cnv.width = baseTileSize * 12;
-				cnv.height = baseTileSize * 6;
+				baseTileSize = 256;
+				cnv.width = baseTileSize * 18;
+				cnv.height = baseTileSize * 4;
 				break;
 			default:
-				baseTileSize = 128;
-				cnv.width = baseTileSize * 6;
+				baseTileSize = 256;
+				cnv.width = baseTileSize * 16;
 				cnv.height = baseTileSize * 6;
 				break;
 		}
